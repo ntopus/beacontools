@@ -1,7 +1,8 @@
 """Packet classes for Eddystone beacons."""
 from binascii import hexlify
-from ..const import EDDYSTONE_URL_SCHEMES, EDDYSTONE_TLD_ENCODINGS
-from ..utils import data_to_hexstring, data_to_binstring
+from ..const import EDDYSTONE_TLD_ENCODINGS, EDDYSTONE_URL_SCHEMES
+from ..utils import data_to_binstring, data_to_hexstring
+
 
 class EddystoneUIDFrame(object):
     """Eddystone UID frame."""
@@ -60,6 +61,11 @@ class EddystoneURLFrame(object):
         """Transmitted URL."""
         return self._url
 
+    @property
+    def properties(self):
+        """Get beacon properties."""
+        return {'tx_power': self.tx_power, 'url': self.url}
+
     def __str__(self):
         return "EddystoneURLFrame<tx_power: %d, url: %s>" \
                % (self.tx_power, self.url)
@@ -87,6 +93,11 @@ class EddystoneEncryptedTLMFrame(object):
     def mic(self):
         """16-bit message integrity check."""
         return self._mic
+
+    @property
+    def properties(self):
+        """Get beacon properties."""
+        return {'encrypted_data': self.encrypted_data, 'salt': self.salt, 'mic': self.mic}
 
     def __str__(self):
         return "EddystoneEncryptedTLMFrame<encrypted_data: %s, salt: %d, mic: %d>" \
@@ -122,10 +133,21 @@ class EddystoneTLMFrame(object):
         """Time since power-on or reboot."""
         return self._seconds_since_boot
 
+    @property
+    def properties(self):
+        """Get beacon properties."""
+        return {
+            'voltage': self.voltage,
+            'temperature': self.temperature,
+            'advertising_count': self.advertising_count,
+            'seconds_since_boot': self.seconds_since_boot
+        }
+
     def __str__(self):
         return "EddystoneTLMFrame<voltage: %d mV, temperature: %d Celsius, advertising count: %d,"\
                " seconds since boot: %d>" % (self.voltage, self.temperature, \
                 self.advertising_count, self.seconds_since_boot)
+
 
 class EddystoneEIDFrame(object):
     """Eddystone EID frame."""
@@ -143,6 +165,11 @@ class EddystoneEIDFrame(object):
     def eid(self):
         """8-byte Ephemeral Identifier."""
         return self._eid
+
+    @property
+    def properties(self):
+        """Get beacon properties."""
+        return {'tx_power': self.tx_power, 'eid': self.eid}
 
     def __str__(self):
         return "EddystoneEIDFrame<tx_power: %d, eid: %s>" \
