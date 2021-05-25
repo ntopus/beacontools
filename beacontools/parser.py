@@ -1,23 +1,32 @@
 """Beacon advertisement parser."""
 from construct import ConstructError
 
+from .const import (CJ_MANUFACTURER_ID, EDDYSTONE_EID_FRAME,
+                    EDDYSTONE_TLM_ENCRYPTED, EDDYSTONE_TLM_FRAME,
+                    EDDYSTONE_TLM_UNENCRYPTED, EDDYSTONE_UID_FRAME,
+                    EDDYSTONE_URL_FRAME, EDDYSTONE_UUID,
+                    ESTIMOTE_MANUFACTURER_ID, ESTIMOTE_TELEMETRY_FRAME,
+                    ESTIMOTE_TELEMETRY_SUBFRAME_A,
+                    ESTIMOTE_TELEMETRY_SUBFRAME_B, ESTIMOTE_UUID,
+                    EXPOSURE_NOTIFICATION_UUID, IBEACON_MANUFACTURER_ID,
+                    MANUFACTURER_SPECIFIC_DATA_TYPE, MINEW_MANUFACTURER_UUID,
+                    MINEW_S1_BATTERY_LEVEL, MINEW_S1_HUMIDITY,
+                    MINEW_S1_TEMPERATURE, SERVICE_DATA_TYPE)
+from .packet_types import (CJMonitorAdvertisement, EddystoneEIDFrame,
+                           EddystoneEncryptedTLMFrame, EddystoneTLMFrame,
+                           EddystoneUIDFrame, EddystoneURLFrame,
+                           EstimoteNearable, EstimoteTelemetryFrameA,
+                           EstimoteTelemetryFrameB, ExposureNotificationFrame,
+                           IBeaconAdvertisement)
 from .structs import LTVFrame
-from .packet_types import EddystoneUIDFrame, EddystoneURLFrame, EddystoneEncryptedTLMFrame, \
-                          EddystoneTLMFrame, EddystoneEIDFrame, IBeaconAdvertisement, \
-                          EstimoteTelemetryFrameA, EstimoteTelemetryFrameB, EstimoteNearable, \
-                          CJMonitorAdvertisement, ExposureNotificationFrame
-from .const import EDDYSTONE_TLM_UNENCRYPTED, EDDYSTONE_TLM_ENCRYPTED, SERVICE_DATA_TYPE, \
-                   EDDYSTONE_UID_FRAME, EDDYSTONE_TLM_FRAME, EDDYSTONE_URL_FRAME, \
-                   EDDYSTONE_EID_FRAME, EDDYSTONE_UUID, ESTIMOTE_UUID, ESTIMOTE_TELEMETRY_FRAME, \
-                   ESTIMOTE_TELEMETRY_SUBFRAME_A, ESTIMOTE_TELEMETRY_SUBFRAME_B, \
-                   MANUFACTURER_SPECIFIC_DATA_TYPE, ESTIMOTE_MANUFACTURER_ID, CJ_MANUFACTURER_ID, \
-                   IBEACON_MANUFACTURER_ID, EXPOSURE_NOTIFICATION_UUID
 
 # pylint: disable=invalid-name,too-many-return-statements
+
 
 def parse_packet(packet):
     """Parse a beacon advertisement packet."""
     return parse_ltv_packet(packet)
+
 
 def parse_ltv_packet(packet):
     """Parse a tag-length-value style beacon packet."""
@@ -37,7 +46,6 @@ def parse_ltv_packet(packet):
                 elif data["service_identifier"] == EXPOSURE_NOTIFICATION_UUID:
                     return ExposureNotificationFrame(data["service_data"])
 
-
             elif ltv['type'] == MANUFACTURER_SPECIFIC_DATA_TYPE:
                 data = ltv["value"]
 
@@ -50,10 +58,15 @@ def parse_ltv_packet(packet):
                 elif data["company_identifier"] == IBEACON_MANUFACTURER_ID:
                     return IBeaconAdvertisement(data['data'])
 
+            elif ltv['type'] == MINEW_MANUFACTURER_UUID:
+                data = ltv["value"]
+                return MinewS1Frame(data['data'])
+
     except ConstructError:
         return None
 
     return None
+
 
 def parse_eddystone_service_data(data):
     """Parse Eddystone service data."""
@@ -73,6 +86,7 @@ def parse_eddystone_service_data(data):
         return EddystoneEIDFrame(data['frame'])
     else:
         return None
+
 
 def parse_estimote_service_data(data):
     """Parse Estimote service data."""

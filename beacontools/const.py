@@ -11,7 +11,7 @@ class ScannerMode(IntEnum):
     MODE_ESTIMOTE = 4
     MODE_CJMONITOR = 8
     MODE_EXPOSURE_NOTIFICATION = 16
-    MODE_ALL = MODE_IBEACON | MODE_EDDYSTONE | MODE_ESTIMOTE | MODE_CJMONITOR  | MODE_EXPOSURE_NOTIFICATION
+    MODE_ALL = MODE_IBEACON | MODE_EDDYSTONE | MODE_ESTIMOTE | MODE_CJMONITOR | MODE_EXPOSURE_NOTIFICATION
 
 
 # hci le scan parameters
@@ -29,8 +29,8 @@ class ScanFilter(IntEnum):
 
 class BluetoothAddressType(IntEnum):
     """Determines the scanner MAC-address"""
-    PUBLIC = 0x00  # with device MAC-address
-    RANDOM = 0x01  # with a random MAC-address
+    PUBLIC = 0x00    # with device MAC-address
+    RANDOM = 0x01    # with a random MAC-address
 
 
 # used for window and interval (i.e. 0x10 * 0.625 = 10ms, 10ms / 0.625 = 0x10)
@@ -109,3 +109,9 @@ CJ_TEMPHUM_TYPE = 0x10fe
 # for COVID-19 Exposure Notifications
 # see https://blog.google/documents/70/Exposure_Notification_-_Bluetooth_Specification_v1.2.2.pdf
 EXPOSURE_NOTIFICATION_UUID = b"\x6f\xfd"
+
+# for minew devices
+MINEW_MANUFACTURER_UUID = 0xE1FF
+MINEW_S1_TEMPERATURE = 0x1147
+MINEW_S1_HUMIDITY = 0x35D7
+MINEW_S1_BATTERY_LEVEL = 0x64
