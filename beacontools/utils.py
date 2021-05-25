@@ -1,8 +1,8 @@
 """Utilities for byte conversion."""
-from binascii import hexlify
-from re import compile as compile_regex
 import array
 import struct
+from binascii import hexlify
+from re import compile as compile_regex
 
 from .const import ScannerMode
 
@@ -24,17 +24,20 @@ def data_to_hexstring(data):
 def data_to_uuid(data):
     """Convert an array of binary data to the iBeacon uuid format."""
     string = data_to_hexstring(data)
-    return string[0:8]+'-'+string[8:12]+'-'+string[12:16]+'-'+string[16:20]+'-'+string[20:32]
+    return string[0:8] + '-' + string[8:12] + '-' + string[12:16] + '-' + string[
+        16:20] + '-' + string[20:32]
 
 
 def data_to_binstring(data):
     """Convert an array of binary data to a binary string."""
     return array.array('B', data).tobytes()
 
+
 def mulaw_to_value(mudata):
     """Convert a mu-law encoded value to linear."""
     position = ((mudata & 0xF0) >> 4) + 5
     return ((1 << position) | ((mudata & 0xF) << (position - 4)) | (1 << (position - 5))) - 33
+
 
 def bt_addr_to_string(addr):
     """Convert a binary string to the hex representation."""
@@ -42,7 +45,7 @@ def bt_addr_to_string(addr):
     addr_str.reverse()
     hex_str = hexlify(addr_str.tobytes()).decode('ascii')
     # insert ":" seperator between the bytes
-    return ':'.join(a+b for a, b in zip(hex_str[::2], hex_str[1::2]))
+    return ':'.join(a + b for a, b in zip(hex_str[::2], hex_str[1::2]))
 
 
 def is_one_of(obj, types):
@@ -105,6 +108,8 @@ def get_mode(device_filter):
             mode |= ScannerMode.MODE_CJMONITOR
         elif isinstance(filtr, ExposureNotificationFilter):
             mode |= ScannerMode.MODE_EXPOSURE_NOTIFICATION
+        elif isinstance(filtr, MinewS1Frame):
+            mode |= ScannerMode.MODE_MINEW
         elif isinstance(filtr, BtAddrFilter):
             mode |= ScannerMode.MODE_ALL
             break
